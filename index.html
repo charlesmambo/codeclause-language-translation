@@ -18,16 +18,19 @@
          <div class="wrapper">
            <div class="lang-container">
             <div class="select">
-                <select data-placeholder="Choose a Language...">
-                    <option value="">Auto Select</option>        
+                <select data-placeholder="Choose a Language...">       
                 </select>
                 </div>
                 <div class="text-control">
                     <div>
                       <textarea name="" id="source-text" cols="30" rows="10"  placeholder="Enter your text here"></textarea>
-                      <h4><span>0</span> / <span>1000</span></h4>
+                      <h4><span class="char-text">0</span> / <span>1000</span></h4>
                     </div> 
-                      <button class="copy-btn delete-btn"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                    <div class="controls">
+                      <p><i id="voiceToText" class="fa fa-microphone voice-controls speech"></i></p>
+                      <i id="from-trash" class="fa fa-trash copy-btn delete-btn"></i>
+                    </div>
+                      
                   </div>
 
             </div>
@@ -42,9 +45,12 @@
                 <div class="text-control">
                   <div>
                     <textarea name="" id="result-text" cols="30" rows="10" placeholder="Translated text will appear"></textarea>
-                    <h4><span>0</span> / <span>1000</span></h4>
+                    <h4><span class="char-text">0</span> / <span>1000</span></h4>
                   </div> 
-                    <button class="copy-btn copy-button"><i class="fa fa-clone" aria-hidden="true"></i></button>
+                  <div class="controls">
+                    <p><i id="voiceSpeech" class="fa fa-volume-up voice-controls"></i></p>
+                    <i id="copy-text" class="fa fa-clone copy-btn copy-button"></i>
+                  </div>  
                 </div>
                
              </div>

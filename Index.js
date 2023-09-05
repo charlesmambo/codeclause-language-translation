@@ -3,6 +3,19 @@ const selectionEls = document.querySelectorAll("select");
 const fromTextEl = document.getElementById("source-text");
 const toTextEl = document.getElementById("result-text");
 const translateBtn = document.getElementById("translate-btn");
+const controlsEl = document.querySelectorAll(".controls i");
+const copyBtn = document.getElementById("copy-text");
+const voiceSpeechEl = document.getElementById("voiceSpeech");
+const sourceCharText = document.querySelector(".char-text");
+console.log(sourceCharText)
+
+
+// ================================= COUNT CHAR =============================================
+
+fromTextEl.addEventListener("input", () =>{
+  const charCount = fromTextEl.value.length;
+  fromTextEl.textContent += charCount;
+})
 
 let selected;
 
@@ -33,13 +46,93 @@ translateBtn.addEventListener('click', ()=>{
   let text = fromTextEl.value;
   let translateFrom = selectionEls[0].value;
   let translateTo = selectionEls[1].value;
-  console.log(text, translateFrom, translateTo)
 
   let apiUrl = `https://api.mymemory.translated.net/get?q=${text}&langpair=${translateFrom}|${translateTo}`;
   
 
   fetch(apiUrl).then(res => res.json()).then(data =>{
-    console.log(data);
     toTextEl.value = data.responseData.translatedText;
   })
+
 })
+
+controlsEl.forEach(control =>{
+  control.addEventListener("click", ({target}) =>{
+    console.log("i got clicked")
+    if(target.classList.contains("fa-trash")){
+      if(target.id == "from-trash"){
+        fromTextEl.value = "";
+      }     
+    }
+  })
+})
+
+
+// Populate the language options in the dropdown
+const supportedVoices = speechSynthesis.getVoices();
+supportedVoices.forEach(voice => {
+  const option = document.createElement("option");
+  option.value = voice.lang;
+  option.textContent = voice.lang;
+  selectionEls.appendChild(option);
+});
+
+
+voiceSpeechEl.addEventListener("click", () => {
+  const textToRead = toTextEl.value;
+  const selectedLanguage = selectionEls.value;
+  if (textToRead) {
+    const utterance = new SpeechSynthesisUtterance(textToRead);
+    utterance.lang =selectedLanguage; // Set the language (modify as needed)
+
+     // Get the selected voice speed from the input field
+     const selectedVoiceSpeed = parseFloat(toTextEl.value);
+
+     if (!isNaN(selectedVoiceSpeed)) {
+       // Set the voice speed
+       utterance.rate = selectedVoiceSpeed;
+     }
+
+    speechSynthesis.speak(utterance);
+  } else {
+    console.log("No text to read.");
+  }
+});
+
+
+const voiceToText = document.getElementById('voiceToText');
+const sourceText = document.getElementById('source-text');
+
+const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+
+recognition.continuous = false;
+recognition.lang = 'en-US';
+
+recognition.onstart = function() {
+    voiceToText.classList.add('active');
+};
+
+recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript;
+    sourceText.value = transcript;
+};
+
+recognition.onend = function() {
+    voiceToText.classList.remove('active');
+};
+
+voiceToText.addEventListener('click', () => {
+    recognition.start();
+});
+
+
+
+//================= COPY CLIPBOARD ===========================================
+function copyTranslatedText() {
+  toTextEl.select();
+  toTextEl.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(toTextEl.value)
+}
+
+copyBtn.addEventListener("click", copyTranslatedText);
+
