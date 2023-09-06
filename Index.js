@@ -6,16 +6,6 @@ const translateBtn = document.getElementById("translate-btn");
 const controlsEl = document.querySelectorAll(".controls i");
 const copyBtn = document.getElementById("copy-text");
 const voiceSpeechEl = document.getElementById("voiceSpeech");
-const sourceCharText = document.querySelector(".char-text");
-console.log(sourceCharText)
-
-
-// ================================= COUNT CHAR =============================================
-
-fromTextEl.addEventListener("input", () =>{
-  const charCount = fromTextEl.value.length;
-  fromTextEl.textContent += charCount;
-})
 
 let selected;
 
@@ -30,8 +20,6 @@ function addCountries(){
        if ((id === 0 && countrycode === "en-GB") || (id === 1 && countrycode === "hi-IN")) {
         option.selected = true;
       }
-
-
       select.appendChild(option)
     }
   })
@@ -47,9 +35,10 @@ translateBtn.addEventListener('click', ()=>{
   let translateFrom = selectionEls[0].value;
   let translateTo = selectionEls[1].value;
 
+  if(!text) return;
+  toTextEl.setAttribute("placeholder", "Translating...")
   let apiUrl = `https://api.mymemory.translated.net/get?q=${text}&langpair=${translateFrom}|${translateTo}`;
   
-
   fetch(apiUrl).then(res => res.json()).then(data =>{
     toTextEl.value = data.responseData.translatedText;
   })
@@ -62,6 +51,7 @@ controlsEl.forEach(control =>{
     if(target.classList.contains("fa-trash")){
       if(target.id == "from-trash"){
         fromTextEl.value = "";
+        document.querySelector(".char-text").textContent = "0";
       }     
     }
   })
@@ -83,13 +73,11 @@ voiceSpeechEl.addEventListener("click", () => {
   const selectedLanguage = selectionEls.value;
   if (textToRead) {
     const utterance = new SpeechSynthesisUtterance(textToRead);
-    utterance.lang =selectedLanguage; // Set the language (modify as needed)
+    utterance.lang =selectedLanguage; 
 
-     // Get the selected voice speed from the input field
      const selectedVoiceSpeed = parseFloat(toTextEl.value);
 
-     if (!isNaN(selectedVoiceSpeed)) {
-       // Set the voice speed
+     if (!isNaN(selectedVoiceSpeed)) {d
        utterance.rate = selectedVoiceSpeed;
      }
 
@@ -135,4 +123,18 @@ function copyTranslatedText() {
 }
 
 copyBtn.addEventListener("click", copyTranslatedText);
+
+
+//====================================== COUNT CHAR ==================================
+
+function updateWordCount() {
+  const sourceText = document.getElementById("source-text").value;
+  const wordCount = sourceText.split(/\s+/).filter(Boolean).length;
+
+  const wordCountDisplay = document.querySelector(".char-text");
+  wordCountDisplay.textContent = wordCount;
+}
+
+const sourceTextArea = document.getElementById("source-text");
+sourceTextArea.addEventListener("input", updateWordCount);
 
